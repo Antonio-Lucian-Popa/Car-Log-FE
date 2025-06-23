@@ -87,14 +87,14 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total cheltuit</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{totalSpent.toFixed(2)} RON</div>
+          <div className="text-xl lg:text-2xl font-bold text-green-600">{totalSpent.toFixed(2)} RON</div>
           <p className="text-xs text-muted-foreground">
             {fuelLogs.length} alimentări înregistrate
           </p>
@@ -107,7 +107,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
           <Calendar className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{thisMonthSpent.toFixed(2)} RON</div>
+          <div className="text-xl lg:text-2xl font-bold">{thisMonthSpent.toFixed(2)} RON</div>
           <div className="flex items-center text-xs">
             {spendingTrend !== 0 && (
               <>
@@ -132,7 +132,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
           <Fuel className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{averagePricePerLiter.toFixed(3)} RON</div>
+          <div className="text-xl lg:text-2xl font-bold">{averagePricePerLiter.toFixed(3)} RON</div>
           <p className="text-xs text-muted-foreground">
             {totalLiters.toFixed(1)}L total alimentați
           </p>
@@ -145,7 +145,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
           <Calculator className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div className="text-xl lg:text-2xl font-bold">
             {averageConsumption > 0 ? `${averageConsumption.toFixed(1)}L` : 'N/A'}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -154,7 +154,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-2">
+      <Card className="sm:col-span-2">
         <CardHeader>
           <CardTitle className="text-sm font-medium flex items-center">
             <BarChart3 className="mr-2 h-4 w-4" />
@@ -186,7 +186,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-2">
+      <Card className="sm:col-span-2">
         <CardHeader>
           <CardTitle className="text-sm font-medium">Alimentări pe mașină</CardTitle>
         </CardHeader>
@@ -200,12 +200,12 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
               return (
                 <div key={car.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <div className="font-medium">{car.name}</div>
-                    <div className="text-sm text-muted-foreground">{car.numberPlate}</div>
+                    <div className="font-medium text-sm">{car.name}</div>
+                    <div className="text-xs text-muted-foreground">{car.numberPlate}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{carSpent.toFixed(2)} RON</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="font-semibold text-sm">{carSpent.toFixed(2)} RON</div>
+                    <div className="text-xs text-muted-foreground">
                       {carLogs.length} alimentări • {carLiters.toFixed(1)}L
                     </div>
                   </div>

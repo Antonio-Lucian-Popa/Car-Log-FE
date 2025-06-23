@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -107,7 +105,7 @@ export function FuelPage() {
 
   // Filter and sort fuel logs
   const filteredAndSortedLogs = React.useMemo(() => {
-    const filtered = fuelLogs.filter(log => {
+    let filtered = fuelLogs.filter(log => {
       const car = cars.find(c => c.id === log.carId);
       const matchesSearch = !searchTerm || 
         car?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -186,17 +184,17 @@ export function FuelPage() {
 
   if (cars.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 pb-20 lg:pb-6">
         <div>
-          <h1 className="text-3xl font-bold">Alimentări</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl lg:text-3xl font-bold">Alimentări</h1>
+          <p className="text-muted-foreground text-sm lg:text-base">
             Monitorizează consumul de combustibil și costurile
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle className="flex items-center text-lg">
               <Fuel className="mr-2 h-5 w-5" />
               Nicio mașină înregistrată
             </CardTitle>
@@ -215,20 +213,20 @@ export function FuelPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 pb-20 lg:pb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Alimentări</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl lg:text-3xl font-bold">Alimentări</h1>
+          <p className="text-muted-foreground text-sm lg:text-base">
             Monitorizează consumul de combustibil și costurile
           </p>
         </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={exportData} disabled={fuelLogs.length === 0}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={exportData} disabled={fuelLogs.length === 0} size="sm">
             <Download className="mr-2 h-4 w-4" />
             Export CSV
           </Button>
-          <Button onClick={openCreateForm}>
+          <Button onClick={openCreateForm} size="sm">
             <Plus className="mr-2 h-4 w-4" />
             Adaugă alimentare
           </Button>
@@ -236,9 +234,9 @@ export function FuelPage() {
       </div>
 
       <Tabs defaultValue="list" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="list">Lista alimentărilor</TabsTrigger>
-          <TabsTrigger value="stats">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="list" className="text-sm">Lista alimentărilor</TabsTrigger>
+          <TabsTrigger value="stats" className="text-sm">
             <BarChart3 className="mr-2 h-4 w-4" />
             Statistici
           </TabsTrigger>
@@ -258,7 +256,7 @@ export function FuelPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Căutare</label>
                   <div className="relative">
@@ -333,6 +331,7 @@ export function FuelPage() {
                       setSortBy('date-desc');
                     }}
                     className="w-full"
+                    size="sm"
                   >
                     Resetează
                   </Button>
@@ -349,7 +348,7 @@ export function FuelPage() {
                 <h3 className="text-lg font-semibold mb-2">
                   {fuelLogs.length === 0 ? 'Nicio alimentare înregistrată' : 'Niciun rezultat găsit'}
                 </h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground mb-4 text-sm">
                   {fuelLogs.length === 0 
                     ? 'Începe prin a adăuga prima ta alimentare.'
                     : 'Încearcă să modifici filtrele pentru a găsi alimentările dorite.'
@@ -372,7 +371,7 @@ export function FuelPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                 {filteredAndSortedLogs.map((fuelLog) => {
                   const car = cars.find(c => c.id === fuelLog.carId);
                   return (

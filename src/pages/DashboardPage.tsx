@@ -95,15 +95,15 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 pb-20 lg:pb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Mașinile mele</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl lg:text-3xl font-bold">Mașinile mele</h1>
+          <p className="text-muted-foreground text-sm lg:text-base">
             Gestionează și monitorizează mașinile tale
           </p>
         </div>
-        <Button onClick={openCreateForm}>
+        <Button onClick={openCreateForm} size="sm">
           <Plus className="mr-2 h-4 w-4" />
           Adaugă mașină
         </Button>
@@ -113,7 +113,7 @@ export function DashboardPage() {
         <div className="text-center py-12">
           <CarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold">Nu ai nicio mașină înregistrată</h3>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-muted-foreground text-sm">
             Începe prin a adăuga prima ta mașină în carnet.
           </p>
           <Button className="mt-4" onClick={openCreateForm}>
@@ -123,7 +123,7 @@ export function DashboardPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
             {cars.map((car) => (
               <CarCard
                 key={car.id}
@@ -135,7 +135,7 @@ export function DashboardPage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mt-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Mașini</CardTitle>

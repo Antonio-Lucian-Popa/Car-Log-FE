@@ -12,14 +12,14 @@ import {
   CreditCard,
   Settings,
   LogOut,
-  ChevronLeft,
-  Menu,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  mobile?: boolean;
 }
 
 const navigationItems = [
@@ -50,7 +50,7 @@ const navigationItems = [
   },
 ];
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, mobile = false }: SidebarProps) {
   const location = useLocation();
   const { logout } = useAuth();
 
@@ -58,20 +58,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <div
       className={cn(
         'relative flex h-full flex-col border-r bg-background transition-all duration-300',
-        collapsed ? 'w-16' : 'w-64'
+        mobile ? 'w-64' : collapsed ? 'w-16' : 'w-64'
       )}
     >
-      <div className="flex h-16 items-center justify-between px-4">
-        {!collapsed && (
+      <div className="flex h-14 lg:h-16 items-center justify-between px-4">
+        {(!collapsed || mobile) && (
           <h2 className="text-lg font-semibold text-primary">Carnet Auto</h2>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="ml-auto"
+          className={cn(mobile ? '' : 'ml-auto')}
         >
-          {collapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {mobile ? <X className="h-4 w-4" /> : null}
         </Button>
       </div>
       
@@ -84,16 +84,16 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             const isActive = location.pathname === item.href;
             
             return (
-              <Link key={item.href} to={item.href}>
+              <Link key={item.href} to={item.href} onClick={mobile ? onToggle : undefined}>
                 <Button
                   variant={isActive ? 'secondary' : 'ghost'}
                   className={cn(
                     'w-full justify-start',
-                    collapsed && 'px-2'
+                    collapsed && !mobile && 'px-2'
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  {!collapsed && <span className="ml-3">{item.title}</span>}
+                  {(!collapsed || mobile) && <span className="ml-3">{item.title}</span>}
                 </Button>
               </Link>
             );
@@ -104,28 +104,31 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className="p-3">
         <Separator className="mb-3" />
         <div className="space-y-2">
-          <Link to="/settings">
+          <Link to="/settings" onClick={mobile ? onToggle : undefined}>
             <Button
               variant="ghost"
               className={cn(
                 'w-full justify-start',
-                collapsed && 'px-2'
+                collapsed && !mobile && 'px-2'
               )}
             >
               <Settings className="h-4 w-4" />
-              {!collapsed && <span className="ml-3">Setări</span>}
+              {(!collapsed || mobile) && <span className="ml-3">Setări</span>}
             </Button>
           </Link>
           <Button
             variant="ghost"
             className={cn(
               'w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive',
-              collapsed && 'px-2'
+              collapsed && !mobile && 'px-2'
             )}
-            onClick={logout}
+            onClick={() => {
+              if (mobile) onToggle();
+              logout();
+            }}
           >
             <LogOut className="h-4 w-4" />
-            {!collapsed && <span className="ml-3">Logout</span>}
+            {(!collapsed || mobile) && <span className="ml-3">Logout</span>}
           </Button>
         </div>
       </div>
