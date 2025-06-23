@@ -1,74 +1,105 @@
-import { User, ApiResponse } from '@/types';
-
-const API_BASE = '/api';
+import { User } from '@/types';
+import { tokenService } from './tokenService';
+import { apiClient } from './apiClient';
 
 class AuthService {
   async login(email: string, password: string): Promise<User> {
-    const response = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await apiClient.post<{
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+      }>('/auth/login', { email, password });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
+      const { user, accessToken, refreshToken, expiresIn } = response.data;
+      
+      // Store tokens
+      tokenService.setTokens(accessToken, refreshToken, expiresIn);
+      
+      return user;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Login failed');
     }
-
-    const data: ApiResponse<User> = await response.json();
-    return data.data;
   }
 
   async register(email: string, password: string, name: string): Promise<User> {
-    const response = await fetch(`${API_BASE}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password, name }),
-    });
+    try {
+      const response = await apiClient.post<{
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+      }>('/auth/register', { email, password, name });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
+      const { user, accessToken, refreshToken, expiresIn } = response.data;
+      
+      // Store tokens
+      tokenService.setTokens(accessToken, refreshToken, expiresIn);
+      
+      return user;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Registration failed');
     }
-
-    const data: ApiResponse<User> = await response.json();
-    return data.data;
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await fetch(`${API_BASE}/auth/login/success`, {
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error('Not authenticated');
+    // Check if we have valid tokens first
+    if (!tokenService.hasValidTokens()) {
+      throw new Error('No valid authentication tokens');
     }
 
-    // Check if the response is actually JSON before parsing
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error('Server returned non-JSON response. API endpoint may not be available.');
+    try {
+      const response = await apiClient.get<User>('/auth/me');
+      return response.data;
+    } catch (error) {
+      // If getting current user fails, clear tokens
+      tokenService.clearTokens();
+      throw new Error('Failed to get current user');
     }
-
-    const data: ApiResponse<User> = await response.json();
-    return data.data;
   }
 
   async logout(): Promise<void> {
-    const response = await fetch(`${API_BASE}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error('Logout failed');
+    try {
+      const refreshToken = tokenService.getRefreshToken();
+      
+      if (refreshToken) {
+        await apiClient.post('/auth/logout', { refreshToken });
+      }
+    } catch (error) {
+      console.error('Logout request failed:', error);
+    } finally {
+      // Always clear tokens locally
+      tokenService.clearTokens();
     }
+  }
+
+  async refreshToken(): Promise<string> {
+    const refreshToken = tokenService.getRefreshToken();
+    
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    try {
+      const response = await apiClient.post<{
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+      }>('/auth/refresh', { refreshToken });
+
+      const { accessToken, refreshToken: newRefreshToken, expiresIn } = response.data;
+      
+      tokenService.setTokens(accessToken, newRefreshToken, expiresIn);
+      return accessToken;
+    } catch (error) {
+      tokenService.clearTokens();
+      throw new Error('Token refresh failed');
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return tokenService.hasValidTokens();
   }
 }
 

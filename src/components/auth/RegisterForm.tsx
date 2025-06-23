@@ -46,11 +46,17 @@ export function RegisterForm({ onToggleForm }: RegisterFormProps) {
 
     try {
       await registerUser(data.email, data.password, data.name);
+      // Navigation is handled in the AuthContext
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Eroare la înregistrare');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    setIsLoading(true);
+    loginWithGoogle();
   };
 
   return (
@@ -65,7 +71,7 @@ export function RegisterForm({ onToggleForm }: RegisterFormProps) {
         <Button
           variant="outline"
           className="w-full"
-          onClick={loginWithGoogle}
+          onClick={handleGoogleLogin}
           disabled={isLoading}
         >
           <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
@@ -169,7 +175,7 @@ export function RegisterForm({ onToggleForm }: RegisterFormProps) {
 
         <div className="text-center text-sm">
           Ai deja cont?{' '}
-          <Button variant="link" className="p-0" onClick={onToggleForm}>
+          <Button variant="link" className="p-0" onClick={onToggleForm} disabled={isLoading}>
             Autentifică-te
           </Button>
         </div>

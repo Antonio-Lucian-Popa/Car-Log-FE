@@ -1,49 +1,19 @@
-import { FuelLog, ApiResponse } from '@/types';
-
-const API_BASE = '/api';
+import { FuelLog } from '@/types';
+import { apiClient } from './apiClient';
 
 class FuelService {
   async getFuelLogs(carId: string): Promise<FuelLog[]> {
-    const response = await fetch(`${API_BASE}/fuel/${carId}`, {
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch fuel logs');
-    }
-
-    const data: ApiResponse<FuelLog[]> = await response.json();
-    return data.data;
+    const response = await apiClient.get<FuelLog[]>(`/fuel/${carId}`);
+    return response.data;
   }
 
   async createFuelLog(carId: string, fuelData: Omit<FuelLog, 'id' | 'carId' | 'userId'>): Promise<FuelLog> {
-    const response = await fetch(`${API_BASE}/fuel/${carId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(fuelData),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create fuel log');
-    }
-
-    const data: ApiResponse<FuelLog> = await response.json();
-    return data.data;
+    const response = await apiClient.post<FuelLog>(`/fuel/${carId}`, fuelData);
+    return response.data;
   }
 
   async deleteFuelLog(id: string): Promise<void> {
-    const response = await fetch(`${API_BASE}/fuel/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete fuel log');
-    }
+    await apiClient.delete(`/fuel/${id}`);
   }
 }
 
