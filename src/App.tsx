@@ -16,8 +16,8 @@ import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="min-h-screen bg-background">
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
@@ -42,8 +42,8 @@ function App() {
           </Routes>
           <Toaster />
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
