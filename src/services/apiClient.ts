@@ -3,11 +3,6 @@ import { tokenService } from './tokenService';
 
 const API_BASE = 'http://localhost:5000/api';
 
-interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  error?: string;
-}
 
 class ApiClient {
   private isRefreshing = false;
@@ -63,7 +58,7 @@ class ApiClient {
   async request<T>(
     url: string,
     options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const accessToken = tokenService.getAccessToken();
     
     // Add authorization header if token exists
@@ -138,25 +133,25 @@ class ApiClient {
   }
 
   // Convenience methods
-  get<T>(url: string): Promise<ApiResponse<T>> {
+  get<T>(url: string): Promise<T> {
     return this.request<T>(url, { method: 'GET' });
   }
 
-  post<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  post<T>(url: string, data?: any): Promise<T> {
     return this.request<T>(url, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
-  put<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  put<T>(url: string, data?: any): Promise<T> {
     return this.request<T>(url, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
-  delete<T>(url: string): Promise<ApiResponse<T>> {
+  delete<T>(url: string): Promise<T> {
     return this.request<T>(url, { method: 'DELETE' });
   }
 }

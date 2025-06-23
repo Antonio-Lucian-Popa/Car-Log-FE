@@ -4,12 +4,12 @@ import { apiClient } from './apiClient';
 class RepairService {
   async getRepairs(carId: string): Promise<RepairLog[]> {
     const response = await apiClient.get<RepairLog[]>(`/repair/${carId}`);
-    return response.data;
+    return response;
   }
 
   async createRepair(carId: string, repairData: Omit<RepairLog, 'id' | 'carId'>): Promise<RepairLog> {
     const response = await apiClient.post<RepairLog>(`/repair/${carId}`, repairData);
-    return response.data;
+    return response;
   }
 
   async deleteRepair(id: string): Promise<void> {

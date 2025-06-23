@@ -10,6 +10,9 @@ class TokenService {
   private readonly EXPIRES_AT_KEY = 'expires_at';
 
   setTokens(accessToken: string, refreshToken: string, expiresIn: number) {
+    if(!accessToken || !refreshToken || expiresIn <= 0) {
+      throw new Error('Invalid token data');
+    }
     const expiresAt = Date.now() + (expiresIn * 1000);
     
     localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);

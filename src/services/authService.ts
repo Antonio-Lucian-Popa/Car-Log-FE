@@ -16,7 +16,7 @@ class AuthService {
 
       
       // Store tokens
-      tokenService.setTokens(response.data.accessToken, response.data.refreshToken, response.data.expiresIn);
+      tokenService.setTokens(response.accessToken, response.refreshToken, response.expiresIn);
 
       const user = await this.getCurrentUser();
       return user;
@@ -31,7 +31,7 @@ class AuthService {
         user: User;
       }>('/auth/register', { email, password, name });
 
-      const { user } = response.data;
+      const { user } = response;
       
       return user;
     } catch (error) {
@@ -47,7 +47,7 @@ class AuthService {
 
     try {
       const response = await apiClient.get<User>('/auth/me');
-      return response.data;
+      return response;
     } catch (error) {
       // If getting current user fails, clear tokens
       tokenService.clearTokens();
@@ -84,7 +84,7 @@ class AuthService {
         expiresIn: number;
       }>('/auth/refresh', { refreshToken });
 
-      const { accessToken, refreshToken: newRefreshToken, expiresIn } = response.data;
+      const { accessToken, refreshToken: newRefreshToken, expiresIn } = response;
       
       tokenService.setTokens(accessToken, newRefreshToken, expiresIn);
       return accessToken;
