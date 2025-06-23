@@ -9,14 +9,14 @@ class AuthService {
       const response = await apiClient.post<{
         accessToken: string;
         refreshToken: string;
-        expiresIn: number;
+        expiresAt: number;
       }>('/auth/login', { email, password });
 
       console.log('Login response:', response);
 
       
       // Store tokens
-      tokenService.setTokens(response.accessToken, response.refreshToken, response.expiresIn);
+      tokenService.setTokens(response.accessToken, response.refreshToken, response.expiresAt);
 
       const user = await this.getCurrentUser();
       return user;
