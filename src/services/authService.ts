@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { User } from '@/types';
 import { tokenService } from './tokenService';
 import { apiClient } from './apiClient';

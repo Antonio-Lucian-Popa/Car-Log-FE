@@ -35,27 +35,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    try {
-      const userData = await authService.login(email, password);
-      setUser(userData);
-      
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
-    } catch (error) {
-      throw error;
-    }
+    const userData = await authService.login(email, password);
+    setUser(userData);
+
+    // Redirect to dashboard after successful login
+    navigate('/dashboard');
   };
 
   const register = async (email: string, password: string, name: string) => {
-    try {
-      const userData = await authService.register(email, password, name);
-      setUser(userData);
-      
-      // Redirect to dashboard after successful registration
-      navigate('/dashboard');
-    } catch (error) {
-      throw error;
-    }
+    const userData = await authService.register(email, password, name);
+    setUser(userData);
+
+    // Redirect to dashboard after successful registration
+    navigate('/dashboard');
   };
 
   const logout = async () => {

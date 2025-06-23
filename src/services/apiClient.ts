@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { tokenService } from './tokenService';
 
 const API_BASE = '/api';
@@ -66,9 +67,9 @@ class ApiClient {
     const accessToken = tokenService.getAccessToken();
     
     // Add authorization header if token exists
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (accessToken) {
