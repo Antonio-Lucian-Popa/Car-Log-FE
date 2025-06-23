@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { tokenService } from './tokenService';
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:5000/api';
 
 interface ApiResponse<T> {
   data: T;

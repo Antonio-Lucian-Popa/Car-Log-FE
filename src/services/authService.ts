@@ -7,17 +7,18 @@ class AuthService {
   async login(email: string, password: string): Promise<User> {
     try {
       const response = await apiClient.post<{
-        user: User;
         accessToken: string;
         refreshToken: string;
         expiresIn: number;
       }>('/auth/login', { email, password });
 
-      const { user, accessToken, refreshToken, expiresIn } = response.data;
+      console.log('Login response:', response);
+
       
       // Store tokens
-      tokenService.setTokens(accessToken, refreshToken, expiresIn);
-      
+      tokenService.setTokens(response.data.accessToken, response.data.refreshToken, response.data.expiresIn);
+
+      const user = await this.getCurrentUser();
       return user;
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : 'Login failed');
@@ -28,15 +29,9 @@ class AuthService {
     try {
       const response = await apiClient.post<{
         user: User;
-        accessToken: string;
-        refreshToken: string;
-        expiresIn: number;
       }>('/auth/register', { email, password, name });
 
-      const { user, accessToken, refreshToken, expiresIn } = response.data;
-      
-      // Store tokens
-      tokenService.setTokens(accessToken, refreshToken, expiresIn);
+      const { user } = response.data;
       
       return user;
     } catch (error) {
