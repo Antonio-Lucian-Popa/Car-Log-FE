@@ -33,6 +33,8 @@ export interface FuelLog {
   liters: number;
   price: number;
   station?: string;
+  fuelType?: string;
+  notes?: string;
 }
 
 export interface RepairLog {
@@ -70,12 +72,6 @@ export interface SubscriptionPlan {
   id: string;
   name: string;
   price: number;
-}
-
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  error?: string;
 }
 
 export interface AuthContextType {
