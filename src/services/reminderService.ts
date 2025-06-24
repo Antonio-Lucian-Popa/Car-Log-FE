@@ -7,8 +7,13 @@ class ReminderService {
     return response;
   }
 
-  async createReminder(carId: string, reminderData: Omit<Reminder, 'id' | 'carId'>): Promise<Reminder> {
-    const response = await apiClient.post<Reminder>(`/reminders/${carId}`, reminderData);
+  async getAllReminders(): Promise<Reminder[]> {
+    const response = await apiClient.get<Reminder[]>('/reminders/all');
+    return response;
+  }
+
+  async createReminder(carId: string, reminderData: Omit<Reminder, 'id'>): Promise<Reminder> {
+    const response = await apiClient.post<Reminder>(`/reminders/`, reminderData);
     return response;
   }
 

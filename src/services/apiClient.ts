@@ -75,6 +75,7 @@ class ApiClient {
       ...options,
       headers,
       credentials: 'include',
+      cache: "no-store",
     };
 
     try {
