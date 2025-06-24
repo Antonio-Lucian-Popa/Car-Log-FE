@@ -481,35 +481,7 @@ export function SettingsPage() {
 
         {/* Account Tab */}
         <TabsContent value="account" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Download className="mr-2 h-5 w-5" />
-                Export date
-              </CardTitle>
-              <CardDescription>
-                Descarcă o copie a tuturor datelor tale
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Poți descărca toate datele tale într-un format JSON. Aceasta include informațiile despre mașini, alimentări, reparații și reminders.
-              </p>
-              <Button onClick={handleExportData} disabled={loading} variant="outline" className="w-full">
-                {loading ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
-                    Se exportă...
-                  </>
-                ) : (
-                  <>
-                    <Download className="mr-2 h-4 w-4" />
-                    Exportă toate datele
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
+
 
           <Card className="border-destructive/50">
             <CardHeader>
