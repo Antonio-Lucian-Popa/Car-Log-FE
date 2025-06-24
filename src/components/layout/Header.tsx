@@ -39,7 +39,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           
           {/* Mobile Logo/Title */}
           <div className="lg:hidden">
-            <h1 className="text-lg font-semibold text-primary">Carnet Auto</h1>
+            <h1 className="text-lg font-semibold text-primary">Car Log</h1>
           </div>
         </div>
         
