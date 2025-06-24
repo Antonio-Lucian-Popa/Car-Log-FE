@@ -99,7 +99,7 @@ export function SettingsPage() {
     setLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await authService.updateUser(data);
       toast.success('Profilul a fost actualizat cu succes');
     } catch (error) {
       toast.error('Eroare la actualizarea profilului');
