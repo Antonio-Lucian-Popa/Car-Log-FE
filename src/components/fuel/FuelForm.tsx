@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -20,19 +19,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FuelLog, Car } from '@/types';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { ro } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { FuelLog, Car } from '@/types';
 
 const fuelSchema = z.object({
-  date: z.string().min(1, 'Data este obligatorie'),
+  carId: z.string().min(1, 'Mașina este obligatorie'),
+  date: z.date({
+    required_error: 'Data este obligatorie',
+  }),
   odometer: z.number().min(0, 'Kilometrajul trebuie să fie pozitiv'),
   liters: z.number().min(0.1, 'Cantitatea trebuie să fie mai mare de 0'),
-  pricePerLiter: z.number().min(0.1, 'Prețul pe litru trebuie să fie mai mare de 0'),
-  totalPrice: z.number().min(0.1, 'Prețul total trebuie să fie mai mare de 0'),
+  price: z.number().min(0.01, 'Prețul trebuie să fie mai mare de 0'),
   station: z.string().optional(),
-  fuelType: z.string().min(1, 'Tipul combustibilului este obligatoriu'),
-  notes: z.string().optional(),
-  carId: z.string().min(1, 'Mașina este obligatorie'),
 });
 
 type FuelFormData = z.infer<typeof fuelSchema>;
@@ -46,48 +53,60 @@ interface FuelFormProps {
   loading?: boolean;
 }
 
-export function FuelForm({ fuelLog, cars, open, onOpenChange, onSubmit, loading }: FuelFormProps) {
+export function FuelForm({ 
+  fuelLog, 
+  cars, 
+  open, 
+  onOpenChange, 
+  onSubmit, 
+  loading 
+}: FuelFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
+    watch,
   } = useForm<FuelFormData>({
     resolver: zodResolver(fuelSchema),
-    defaultValues: fuelLog ? {
-      date: format(new Date(fuelLog.date), 'yyyy-MM-dd'),
-      odometer: fuelLog.odometer,
-      liters: fuelLog.liters,
-      pricePerLiter: fuelLog.price / fuelLog.liters,
-      totalPrice: fuelLog.price,
-      station: fuelLog.station || '',
-      fuelType: fuelLog.fuelType || 'benzina',
-      notes: fuelLog.notes || '',
-      carId: fuelLog.carId,
-    } : {
-      date: format(new Date(), 'yyyy-MM-dd'),
+    defaultValues: {
+      carId: '',
+      date: new Date(),
       odometer: 0,
       liters: 0,
-      pricePerLiter: 0,
-      totalPrice: 0,
+      price: 0,
       station: '',
-      fuelType: 'benzina',
-      notes: '',
-      carId: cars[0]?.id || '',
     },
   });
 
-  const liters = watch('liters');
-  const pricePerLiter = watch('pricePerLiter');
+  const selectedDate = watch('date');
+  const selectedCarId = watch('carId');
 
-  // Auto-calculate total price
-  React.useEffect(() => {
-    if (liters && pricePerLiter) {
-      setValue('totalPrice', Number((liters * pricePerLiter).toFixed(2)));
+  // Reset form when fuelLog data changes or dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      if (fuelLog) {
+        reset({
+          carId: fuelLog.carId,
+          date: new Date(fuelLog.date),
+          odometer: fuelLog.odometer,
+          liters: fuelLog.liters,
+          price: fuelLog.price,
+          station: fuelLog.station || '',
+        });
+      } else {
+        reset({
+          carId: '',
+          date: new Date(),
+          odometer: 0,
+          liters: 0,
+          price: 0,
+          station: '',
+        });
+      }
     }
-  }, [liters, pricePerLiter, setValue]);
+  }, [fuelLog, open, reset]);
 
   const handleFormSubmit = async (data: FuelFormData) => {
     await onSubmit(data);
@@ -96,53 +115,75 @@ export function FuelForm({ fuelLog, cars, open, onOpenChange, onSubmit, loading 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{fuelLog ? 'Editează alimentarea' : 'Adaugă alimentare nouă'}</DialogTitle>
+          <DialogTitle>
+            {fuelLog ? 'Editează Alimentarea' : 'Adaugă Alimentare Nouă'}
+          </DialogTitle>
           <DialogDescription>
             {fuelLog 
               ? 'Modifică detaliile alimentării.' 
-              : 'Completează detaliile pentru a înregistra o nouă alimentare.'
+              : 'Înregistrează o nouă alimentare pentru mașina ta.'
             }
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="carId">Mașina</Label>
-              <Select
-                value={watch('carId')}
-                onValueChange={(value) => setValue('carId', value)}
-                disabled={loading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selectează mașina" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cars.map((car) => (
-                    <SelectItem key={car.id} value={car.id}>
-                      {car.name} - {car.numberPlate}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.carId && (
-                <p className="text-sm text-destructive">{errors.carId.message}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="carId">Mașina</Label>
+            <Select
+              value={selectedCarId}
+              onValueChange={(value) => setValue('carId', value)}
+              disabled={loading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selectează mașina" />
+              </SelectTrigger>
+              <SelectContent>
+                {cars.map((car) => (
+                  <SelectItem key={car.id} value={car.id}>
+                    {car.name} - {car.numberPlate}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.carId && (
+              <p className="text-sm text-destructive">{errors.carId.message}</p>
+            )}
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="date">Data</Label>
-              <Input
-                id="date"
-                type="date"
-                {...register('date')}
-                disabled={loading}
-              />
-              {errors.date && (
-                <p className="text-sm text-destructive">{errors.date.message}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label>Data alimentării</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                  disabled={loading}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? (
+                    format(selectedDate, 'dd MMM yyyy', { locale: ro })
+                  ) : (
+                    "Selectează data"
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => setValue('date', date!)}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            {errors.date && (
+              <p className="text-sm text-destructive">{errors.date.message}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -151,6 +192,8 @@ export function FuelForm({ fuelLog, cars, open, onOpenChange, onSubmit, loading 
               <Input
                 id="odometer"
                 type="number"
+                min="0"
+                step="1"
                 placeholder="ex: 50000"
                 {...register('odometer', { valueAsNumber: true })}
                 disabled={loading}
@@ -161,36 +204,12 @@ export function FuelForm({ fuelLog, cars, open, onOpenChange, onSubmit, loading 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fuelType">Tip combustibil</Label>
-              <Select
-                value={watch('fuelType')}
-                onValueChange={(value) => setValue('fuelType', value)}
-                disabled={loading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selectează tipul" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="benzina">Benzină</SelectItem>
-                  <SelectItem value="motorina">Motorină</SelectItem>
-                  <SelectItem value="gpl">GPL</SelectItem>
-                  <SelectItem value="electric">Electric</SelectItem>
-                  <SelectItem value="hibrid">Hibrid</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.fuelType && (
-                <p className="text-sm text-destructive">{errors.fuelType.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
               <Label htmlFor="liters">Litri</Label>
               <Input
                 id="liters"
                 type="number"
-                step="0.01"
+                min="0.1"
+                step="0.1"
                 placeholder="ex: 45.5"
                 {...register('liters', { valueAsNumber: true })}
                 disabled={loading}
@@ -199,62 +218,38 @@ export function FuelForm({ fuelLog, cars, open, onOpenChange, onSubmit, loading 
                 <p className="text-sm text-destructive">{errors.liters.message}</p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="pricePerLiter">Preț/litru (RON)</Label>
-              <Input
-                id="pricePerLiter"
-                type="number"
-                step="0.001"
-                placeholder="ex: 6.85"
-                {...register('pricePerLiter', { valueAsNumber: true })}
-                disabled={loading}
-              />
-              {errors.pricePerLiter && (
-                <p className="text-sm text-destructive">{errors.pricePerLiter.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="totalPrice">Total (RON)</Label>
-              <Input
-                id="totalPrice"
-                type="number"
-                step="0.01"
-                placeholder="ex: 311.75"
-                {...register('totalPrice', { valueAsNumber: true })}
-                disabled={loading}
-                className="bg-muted"
-                readOnly
-              />
-              {errors.totalPrice && (
-                <p className="text-sm text-destructive">{errors.totalPrice.message}</p>
-              )}
-            </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="station">Stația de alimentare (opțional)</Label>
+            <Label htmlFor="price">Preț total (RON)</Label>
+            <Input
+              id="price"
+              type="number"
+              min="0.01"
+              step="0.01"
+              placeholder="ex: 250.50"
+              {...register('price', { valueAsNumber: true })}
+              disabled={loading}
+            />
+            {errors.price && (
+              <p className="text-sm text-destructive">{errors.price.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="station">Stația (opțional)</Label>
             <Input
               id="station"
               placeholder="ex: Petrom, OMV, Rompetrol"
               {...register('station')}
               disabled={loading}
             />
+            {errors.station && (
+              <p className="text-sm text-destructive">{errors.station.message}</p>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notițe (opțional)</Label>
-            <Textarea
-              id="notes"
-              placeholder="ex: Alimentare completă, preț promoțional"
-              {...register('notes')}
-              disabled={loading}
-              rows={3}
-            />
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-4">
+          <div className="flex justify-end space-x-2">
             <Button
               type="button"
               variant="outline"

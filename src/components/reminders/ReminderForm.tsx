@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -75,15 +75,9 @@ export function ReminderForm({
     reset,
     setValue,
     watch,
-    control,
   } = useForm<ReminderFormData>({
     resolver: zodResolver(reminderSchema),
-    defaultValues: reminder ? {
-      type: reminder.type,
-      dueDate: new Date(reminder.dueDate),
-      repeatDays: reminder.repeatDays || undefined,
-      carId: reminder.carId,
-    } : {
+    defaultValues: {
       type: undefined,
       dueDate: undefined,
       repeatDays: undefined,
@@ -93,11 +87,30 @@ export function ReminderForm({
 
   const selectedDate = watch('dueDate');
   const selectedType = watch('type');
+  const selectedCarId = watch('carId');
+
+  // Reset form when reminder data changes or dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      if (reminder) {
+        reset({
+          type: reminder.type,
+          dueDate: new Date(reminder.dueDate),
+          repeatDays: reminder.repeatDays || undefined,
+          carId: reminder.carId,
+        });
+      } else {
+        reset({
+          type: undefined,
+          dueDate: undefined,
+          repeatDays: undefined,
+          carId: '',
+        });
+      }
+    }
+  }, [reminder, open, reset]);
 
   const handleFormSubmit = async (data: ReminderFormData) => {
-    // get car id selected from the form
-    const carId = watch('carId');
-    data.carId = carId;
     await onSubmit(data);
     reset();
   };
@@ -119,9 +132,12 @@ export function ReminderForm({
 
   const handleTypeChange = (type: ReminderType) => {
     setValue('type', type);
-    const defaultDays = getDefaultRepeatDays(type);
-    if (defaultDays) {
-      setValue('repeatDays', defaultDays);
+    // Only set default repeat days if we're creating a new reminder
+    if (!reminder) {
+      const defaultDays = getDefaultRepeatDays(type);
+      if (defaultDays) {
+        setValue('repeatDays', defaultDays);
+      }
     }
   };
 
@@ -143,7 +159,7 @@ export function ReminderForm({
           <div className="space-y-2">
             <Label htmlFor="carId">Mașina</Label>
             <Select
-              value={watch('carId')}
+              value={selectedCarId}
               onValueChange={(value) => setValue('carId', value)}
               disabled={loading}
             >

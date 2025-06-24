@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -20,15 +20,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RepairLog, Car } from '@/types';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { ro } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { RepairLog, Car } from '@/types';
 
 const repairSchema = z.object({
-  date: z.string().min(1, 'Data este obligatorie'),
+  carId: z.string().min(1, 'Mașina este obligatorie'),
+  date: z.date({
+    required_error: 'Data este obligatorie',
+  }),
   description: z.string().min(1, 'Descrierea este obligatorie'),
   cost: z.number().min(0, 'Costul trebuie să fie pozitiv'),
   service: z.string().optional(),
-  carId: z.string().min(1, 'Mașina este obligatorie'),
 });
 
 type RepairFormData = z.infer<typeof repairSchema>;
@@ -42,117 +53,141 @@ interface RepairFormProps {
   loading?: boolean;
 }
 
-const commonRepairTypes = [
-  'Schimb ulei motor',
-  'Schimb filtru ulei',
-  'Schimb plăcuțe frână',
-  'Schimb discuri frână',
-  'Schimb anvelope',
-  'Echilibrare roți',
-  'Schimb baterie',
-  'Revizie tehnică',
-  'Schimb bujii',
-  'Schimb filtru aer',
-  'Schimb filtru combustibil',
-  'Schimb lichid frână',
-  'Schimb antigel',
-  'Reparație motor',
-  'Reparație transmisie',
-  'Reparație suspensie',
-  'Reparație sistem electric',
-  'Reparație aer condiționat',
-];
-
-export function RepairForm({ repairLog, cars, open, onOpenChange, onSubmit, loading }: RepairFormProps) {
+export function RepairForm({ 
+  repairLog, 
+  cars, 
+  open, 
+  onOpenChange, 
+  onSubmit, 
+  loading 
+}: RepairFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
+    watch,
   } = useForm<RepairFormData>({
     resolver: zodResolver(repairSchema),
-    defaultValues: repairLog ? {
-      date: format(new Date(repairLog.date), 'yyyy-MM-dd'),
-      description: repairLog.description,
-      cost: repairLog.cost,
-      service: repairLog.service || '',
-      carId: repairLog.carId,
-    } : {
-      date: format(new Date(), 'yyyy-MM-dd'),
+    defaultValues: {
+      carId: '',
+      date: new Date(),
       description: '',
       cost: 0,
       service: '',
-      carId: cars[0]?.id || '',
     },
   });
+
+  const selectedDate = watch('date');
+  const selectedCarId = watch('carId');
+
+  // Reset form when repairLog data changes or dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      if (repairLog) {
+        reset({
+          carId: repairLog.carId,
+          date: new Date(repairLog.date),
+          description: repairLog.description,
+          cost: repairLog.cost,
+          service: repairLog.service || '',
+        });
+      } else {
+        reset({
+          carId: '',
+          date: new Date(),
+          description: '',
+          cost: 0,
+          service: '',
+        });
+      }
+    }
+  }, [repairLog, open, reset]);
 
   const handleFormSubmit = async (data: RepairFormData) => {
     await onSubmit(data);
     reset();
   };
 
-  const handleQuickSelect = (description: string) => {
-    setValue('description', description);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{repairLog ? 'Editează reparația' : 'Adaugă reparație nouă'}</DialogTitle>
+          <DialogTitle>
+            {repairLog ? 'Editează Reparația' : 'Adaugă Reparație Nouă'}
+          </DialogTitle>
           <DialogDescription>
             {repairLog 
               ? 'Modifică detaliile reparației.' 
-              : 'Completează detaliile pentru a înregistra o nouă reparație.'
+              : 'Înregistrează o nouă reparație pentru mașina ta.'
             }
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="carId">Mașina</Label>
-              <Select
-                value={watch('carId')}
-                onValueChange={(value) => setValue('carId', value)}
-                disabled={loading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selectează mașina" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cars.map((car) => (
-                    <SelectItem key={car.id} value={car.id}>
-                      {car.name} - {car.numberPlate}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.carId && (
-                <p className="text-sm text-destructive">{errors.carId.message}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="carId">Mașina</Label>
+            <Select
+              value={selectedCarId}
+              onValueChange={(value) => setValue('carId', value)}
+              disabled={loading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selectează mașina" />
+              </SelectTrigger>
+              <SelectContent>
+                {cars.map((car) => (
+                  <SelectItem key={car.id} value={car.id}>
+                    {car.name} - {car.numberPlate}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.carId && (
+              <p className="text-sm text-destructive">{errors.carId.message}</p>
+            )}
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="date">Data</Label>
-              <Input
-                id="date"
-                type="date"
-                {...register('date')}
-                disabled={loading}
-              />
-              {errors.date && (
-                <p className="text-sm text-destructive">{errors.date.message}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label>Data reparației</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                  disabled={loading}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? (
+                    format(selectedDate, 'dd MMM yyyy', { locale: ro })
+                  ) : (
+                    "Selectează data"
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => setValue('date', date!)}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            {errors.date && (
+              <p className="text-sm text-destructive">{errors.date.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Descrierea reparației</Label>
             <Textarea
               id="description"
-              placeholder="ex: Schimb ulei motor și filtru ulei"
+              placeholder="ex: Schimb plăcuțe frână față, revizie motor..."
               {...register('description')}
               disabled={loading}
               rows={3}
@@ -160,56 +195,38 @@ export function RepairForm({ repairLog, cars, open, onOpenChange, onSubmit, load
             {errors.description && (
               <p className="text-sm text-destructive">{errors.description.message}</p>
             )}
-            
-            {/* Quick select buttons */}
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Selectare rapidă:</Label>
-              <div className="grid grid-cols-2 gap-1 max-h-32 overflow-y-auto">
-                {commonRepairTypes.map((type) => (
-                  <Button
-                    key={type}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8 justify-start"
-                    onClick={() => handleQuickSelect(type)}
-                    disabled={loading}
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </div>
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cost">Cost (RON)</Label>
-              <Input
-                id="cost"
-                type="number"
-                step="0.01"
-                placeholder="ex: 250.00"
-                {...register('cost', { valueAsNumber: true })}
-                disabled={loading}
-              />
-              {errors.cost && (
-                <p className="text-sm text-destructive">{errors.cost.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="service">Service (opțional)</Label>
-              <Input
-                id="service"
-                placeholder="ex: AutoService SRL"
-                {...register('service')}
-                disabled={loading}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="cost">Cost (RON)</Label>
+            <Input
+              id="cost"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="ex: 450.00"
+              {...register('cost', { valueAsNumber: true })}
+              disabled={loading}
+            />
+            {errors.cost && (
+              <p className="text-sm text-destructive">{errors.cost.message}</p>
+            )}
           </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
+          <div className="space-y-2">
+            <Label htmlFor="service">Service/Atelier (opțional)</Label>
+            <Input
+              id="service"
+              placeholder="ex: Service Auto Dacia, Bosch Car Service"
+              {...register('service')}
+              disabled={loading}
+            />
+            {errors.service && (
+              <p className="text-sm text-destructive">{errors.service.message}</p>
+            )}
+          </div>
+
+          <div className="flex justify-end space-x-2">
             <Button
               type="button"
               variant="outline"

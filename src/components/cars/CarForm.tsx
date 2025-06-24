@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -40,13 +40,7 @@ export function CarForm({ car, open, onOpenChange, onSubmit, loading }: CarFormP
     reset,
   } = useForm<CarFormData>({
     resolver: zodResolver(carSchema),
-    defaultValues: car ? {
-      name: car.name,
-      model: car.model,
-      year: car.year,
-      numberPlate: car.numberPlate,
-      vin: car.vin || '',
-    } : {
+    defaultValues: {
       name: '',
       model: '',
       year: new Date().getFullYear(),
@@ -54,6 +48,29 @@ export function CarForm({ car, open, onOpenChange, onSubmit, loading }: CarFormP
       vin: '',
     },
   });
+
+  // Reset form when car data changes or dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      if (car) {
+        reset({
+          name: car.name,
+          model: car.model,
+          year: car.year,
+          numberPlate: car.numberPlate,
+          vin: car.vin || '',
+        });
+      } else {
+        reset({
+          name: '',
+          model: '',
+          year: new Date().getFullYear(),
+          numberPlate: '',
+          vin: '',
+        });
+      }
+    }
+  }, [car, open, reset]);
 
   const handleFormSubmit = async (data: CarFormData) => {
     await onSubmit(data);
