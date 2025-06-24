@@ -116,7 +116,7 @@ export function SettingsPage() {
       toast.success('Parola a fost schimbată cu succes');
       passwordForm.reset();
     } catch (error) {
-      toast.error('Eroare la schimbarea parolei');
+      toast.error(error instanceof Error ? error.message : 'Eroare la schimbarea parolei');
     } finally {
       setLoading(false);
     }
