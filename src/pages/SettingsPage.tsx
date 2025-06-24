@@ -53,6 +53,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/contexts/ThemeContext';
+import { authService } from '@/services/authService';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Numele trebuie să aibă minimum 2 caractere'),
@@ -84,7 +85,7 @@ export function SettingsPage() {
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: user?.email?.split('@')[0] || '',
+      name: user?.name || '',
       email: user?.email || '',
       phone: '',
     },
@@ -136,8 +137,7 @@ export function SettingsPage() {
 
   const handleDeleteAccount = async () => {
     try {
-      // Simulate account deletion
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await authService.deleteUser();
       toast.success('Contul a fost șters cu succes');
       logout();
     } catch (error) {

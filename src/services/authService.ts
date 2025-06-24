@@ -97,6 +97,24 @@ class AuthService {
   isAuthenticated(): boolean {
     return tokenService.hasValidTokens();
   }
+
+  async updateUser(userData: Partial<User>): Promise<User> {
+    try {
+      const response = await apiClient.put<User>('/auth/update', userData);
+      return response;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to update user');
+    }
+  }
+
+  async deleteUser(): Promise<void> {
+    try {
+      await apiClient.delete('/auth/delete');
+      tokenService.clearTokens();
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to delete user');
+    }
+  }
 }
 
 export const authService = new AuthService();
