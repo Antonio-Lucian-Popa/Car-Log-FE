@@ -189,10 +189,10 @@ export function RemindersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Reminders</h1>
-          <p className="text-muted-foreground">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className='lg:flex lg:flex-col lg:mb-4 lg:items-start'>
+          <h1 className="text-2xl lg:text-3xl font-bold">Reminders</h1>
+          <p className="text-muted-foreground text-sm lg:text-base">
             Gestionează notificările pentru ITP, RCA, revizie și schimb ulei
           </p>
         </div>

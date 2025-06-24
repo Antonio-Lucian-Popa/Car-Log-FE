@@ -188,7 +188,7 @@ export function RepairsPage() {
   if (cars.length === 0) {
     return (
       <div className="space-y-6">
-        <div className='flex flex-col mb-4 items-start'>
+        <div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4'>
           <h1 className="text-3xl font-bold">Reparații</h1>
           <p className="text-muted-foreground">
             Ține evidența reparațiilor și cheltuielilor de întreținere
@@ -217,14 +217,14 @@ export function RepairsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap mb-4">
-        <div className='flex flex-col mb-4 items-start'>
-          <h1 className="text-3xl font-bold mb-2">Reparații</h1>
-          <p className="text-muted-foreground text-left">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className='lg:flex lg:flex-col lg:mb-4 lg:items-start'>
+          <h1 className="text-2xl lg:text-3xl font-bold mb-2">Reparații</h1>
+          <p className="text-muted-foreground text-sm lg:text-base">
             Ține evidența reparațiilor și cheltuielilor de întreținere
           </p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={exportData} disabled={repairLogs.length === 0}>
             <Download className="mr-2 h-4 w-4" />
             Export CSV
