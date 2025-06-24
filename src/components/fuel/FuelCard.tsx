@@ -105,7 +105,7 @@ export function FuelCard({ fuelLog, carName, onEdit, onDelete }: FuelCardProps) 
 
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Preț/litru:</span>
-            <span className="font-medium">{pricePerLiter.toFixed(3)} RON</span>
+            <span className="font-medium">{pricePerLiter.toFixed(2)} RON</span>
           </div>
 
           {fuelLog.station && (
