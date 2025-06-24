@@ -107,6 +107,14 @@ class AuthService {
     }
   }
 
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    try {
+      await apiClient.put('/auth/update-password', { oldPassword: currentPassword, newPassword });
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to change password');
+    }
+  }
+
   async deleteUser(): Promise<void> {
     try {
       await apiClient.delete('/auth/delete');

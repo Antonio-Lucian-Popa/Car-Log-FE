@@ -112,7 +112,7 @@ export function SettingsPage() {
     setLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await authService.changePassword(data.currentPassword, data.newPassword);
       toast.success('Parola a fost schimbată cu succes');
       passwordForm.reset();
     } catch (error) {
