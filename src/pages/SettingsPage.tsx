@@ -165,7 +165,7 @@ export function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-3">
           <TabsTrigger value="profile" className="text-xs lg:text-sm">
             <User className="mr-1 lg:mr-2 h-3 w-3 lg:h-4 lg:w-4" />
             <span className="hidden sm:inline">Profil</span>
