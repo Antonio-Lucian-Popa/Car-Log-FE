@@ -97,7 +97,7 @@ export function DashboardPage() {
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
+        <div className='lg:flex lg:flex-col lg:mb-4 lg:items-start'>
           <h1 className="text-2xl lg:text-3xl font-bold">Mașinile mele</h1>
           <p className="text-muted-foreground text-sm lg:text-base">
             Gestionează și monitorizează mașinile tale
