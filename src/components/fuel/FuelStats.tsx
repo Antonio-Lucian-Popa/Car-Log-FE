@@ -54,7 +54,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
   });
   
   const thisMonthSpent = thisMonthLogs.reduce((sum, log) => sum + log.price, 0);
-  const thisMonthLiters = thisMonthLogs.reduce((sum, log) => sum + log.liters, 0);
+  // const thisMonthLiters = thisMonthLogs.reduce((sum, log) => sum + log.liters, 0);
 
   // Last month comparison
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;

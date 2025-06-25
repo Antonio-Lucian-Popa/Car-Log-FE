@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  Wrench, 
   TrendingUp, 
   TrendingDown, 
   Calculator, 
@@ -65,9 +63,9 @@ export function RepairStats({ repairLogs, cars }: RepairStatsProps) {
     return acc;
   }, {} as Record<string, number>);
 
-  const mostExpensiveCategory = Object.entries(repairTypes).reduce((a, b) => 
-    repairTypes[a[0]] > repairTypes[b[0]] ? a : b
-  )?.[0] || 'N/A';
+  // const mostExpensiveCategory = Object.entries(repairTypes).reduce((a, b) => 
+  //   repairTypes[a[0]] > repairTypes[b[0]] ? a : b
+  // )?.[0] || 'N/A';
 
   // Yearly statistics
   const currentYearLogs = repairLogs.filter(log => {
@@ -83,7 +81,7 @@ export function RepairStats({ repairLogs, cars }: RepairStatsProps) {
     return `${date.getFullYear()}-${date.getMonth()}`;
   })).size;
   
-  const averageMonthlySpending = monthsWithData > 0 ? totalSpent / monthsWithData : 0;
+  // const averageMonthlySpending = monthsWithData > 0 ? totalSpent / monthsWithData : 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
