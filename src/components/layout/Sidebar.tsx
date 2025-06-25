@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from "../../assets/logo.png";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -63,7 +64,7 @@ export function Sidebar({ collapsed, onToggle, mobile = false }: SidebarProps) {
       <div className="flex h-14 lg:h-16 items-center justify-between px-4">
         {(!collapsed || mobile) && (
           // <h2 className="text-lg font-semibold text-primary">Car Log</h2>
-          <img src="./assets/logo.png" alt="Car Log" className='w-20' />
+          <img src={logo} alt="Car Log" className='w-20' />
         )}
         <Button
           variant="ghost"

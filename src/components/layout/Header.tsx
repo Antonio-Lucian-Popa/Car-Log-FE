@@ -11,6 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import logo from "../../assets/logo.png";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -38,7 +39,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           {/* Mobile Logo/Title */}
           <div className="lg:hidden w-100 flex items-center justify-center space-x-2">
             {/* <h1 className="text-lg font-semibold text-primary">Carnet Auto</h1> */}
-            <img src="./assets/logo.png" alt="Car Log" className='w-1/3' />
+            <img src={logo} alt="Car Log" className='w-1/3' />
           </div>
         </div>
         
