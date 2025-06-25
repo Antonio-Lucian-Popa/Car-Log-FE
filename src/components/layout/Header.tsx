@@ -34,14 +34,12 @@ export function Header({ onMenuClick }: HeaderProps) {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          
-          <div className="hidden lg:block">
-            <h1 className="text-xl font-semibold">Dashboard</h1>
-          </div>
+        
           
           {/* Mobile Logo/Title */}
-          <div className="lg:hidden">
-            <h1 className="text-lg font-semibold text-primary">Carnet Auto</h1>
+          <div className="lg:hidden w-100 flex items-center justify-center space-x-2">
+            {/* <h1 className="text-lg font-semibold text-primary">Carnet Auto</h1> */}
+            <img src="./assets/logo.png" alt="Car Log" className='w-1/3' />
           </div>
         </div>
         

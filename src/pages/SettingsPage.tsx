@@ -78,8 +78,7 @@ export function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [language, setLanguage] = useState('ro');
+  const { theme, setTheme, resolvedTheme } = useTheme();
   
 
   const profileForm = useForm<ProfileFormData>({
@@ -122,18 +121,6 @@ export function SettingsPage() {
     }
   };
 
-  const handleExportData = async () => {
-    setLoading(true);
-    try {
-      // Simulate data export
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Datele au fost exportate cu succes');
-    } catch (error) {
-      toast.error('Eroare la exportarea datelor');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteAccount = async () => {
     try {
@@ -432,50 +419,6 @@ export function SettingsPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Globe className="mr-2 h-5 w-5" />
-                  Limbă și regiune
-                </CardTitle>
-                <CardDescription>
-                  Setează limba aplicației
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="language">Limbă</Label>
-                  <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ro">Română</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="currency">Monedă</Label>
-                  <Select defaultValue="ron">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ron">RON (Lei)</SelectItem>
-                      <SelectItem value="eur">EUR (Euro)</SelectItem>
-                      <SelectItem value="usd">USD (Dolari)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button onClick={() => toast.success('Setările au fost salvate')} className="w-full">
-                  <Save className="mr-2 h-4 w-4" />
-                  Salvează setările
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
