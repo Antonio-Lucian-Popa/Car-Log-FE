@@ -132,7 +132,7 @@ export function FuelStats({ fuelLogs, cars }: FuelStatsProps) {
           <Fuel className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-xl lg:text-2xl font-bold">{averagePricePerLiter.toFixed(3)} RON</div>
+          <div className="text-xl lg:text-2xl font-bold">{averagePricePerLiter.toFixed(2)} RON</div>
           <p className="text-xs text-muted-foreground">
             {totalLiters.toFixed(1)}L total alimentați
           </p>

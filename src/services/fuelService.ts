@@ -7,7 +7,7 @@ interface CreateFuelLogData {
   odometer: number;
   liters: number;
   pricePerLiter: number;
-  totalPrice: number;
+  price: number;
   station?: string;
   fuelType: string;
   notes?: string;
@@ -26,12 +26,13 @@ class FuelService {
   }
 
   async createFuelLog(data: CreateFuelLogData): Promise<FuelLog> {
+    console.log('Creating fuel log with data:', data);
     const fuelLogData = {
       carId: data.carId,
       date: data.date,
       odometer: data.odometer,
       liters: data.liters,
-      price: data.totalPrice,
+      price: data.price,
       station: data.station,
       fuelType: data.fuelType,
       notes: data.notes,
@@ -44,7 +45,7 @@ class FuelService {
   async updateFuelLog(id: string, data: Partial<CreateFuelLogData>): Promise<FuelLog> {
     const fuelLogData = {
       ...data,
-      price: data.totalPrice,
+      price: data.price,
     };
     
     const response = await apiClient.put<FuelLog>(`/fuel/${id}`, fuelLogData);
