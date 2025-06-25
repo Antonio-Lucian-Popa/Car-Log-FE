@@ -1,4 +1,3 @@
-import React from 'react';
 import { Bell, User, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
