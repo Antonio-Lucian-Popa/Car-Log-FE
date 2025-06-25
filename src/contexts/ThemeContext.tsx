@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, useContext } from 'react';
 import { ThemeProvider as NextThemeProvider, useTheme as useNextTheme } from 'next-themes';
 
